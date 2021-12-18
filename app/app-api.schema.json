@@ -1,0 +1,17 @@
+{
+  "project": "app",
+  "path": "/",
+  "services": [
+     {
+        "id": "getAppApi",
+        "feature": "Application",
+        "path": "/",
+        "verb": "GET",
+        "request": {},
+        "response": {
+           "status": 200,
+           "delay": 500
+        }
+     }
+  ]
+}
