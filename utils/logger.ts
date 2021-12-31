@@ -1,4 +1,4 @@
-import winston from 'winston';
+import winstons from 'winston';
 
 const colors = {
   error: 'red',
