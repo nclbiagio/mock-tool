@@ -6,6 +6,7 @@ import { NodeProcessException } from '../exceptions/node-process-exception';
 import { getProjectRouter } from './services/project.service';
 import { getProjectsFile } from './services/app.service';
 import { Project } from './api-mock-schema.model';
+import { setTestSuiteControllers } from './test-suite/test-suite.controllers';
 
 /**
  * Projects routing
@@ -29,9 +30,9 @@ export const appRouting = async (app: Application, project: string | null): Prom
          }
       });
 
-      const getActiveRouterConf = await getProjectRouter(pojectConfig.id, pojectConfig.main, pojectConfig.path);
+      const getActiveRouterConf = await getProjectRouter(pojectConfig.id, pojectConfig.path);
 
-      const basePath = `${getActiveRouterConf.main}${getActiveRouterConf.path}`;
+      const basePath = `${getActiveRouterConf.path}`;
       console.log('BASE_PATH => ', basePath);
 
       /**
@@ -55,12 +56,17 @@ export const appRouting = async (app: Application, project: string | null): Prom
       /**
        * PROJECTS API Routers Definition
        */
-      const apiRouter = Router();
 
       if (getActiveRouterConf) {
-         apiRouter.use(getActiveRouterConf.path, getActiveRouterConf.router);
-         app.use(getActiveRouterConf.main, apiRouter);
+         app.use(getActiveRouterConf.path, getActiveRouterConf.router);
       }
+
+      /**
+       * TEST SUITE API Routers Definition
+       */
+      /* const testSuiteRouter = Router();
+      const testSuiteRouterControllers = setTestSuiteControllers(testSuiteRouter);
+      app.use('/test-suite/v1/', testSuiteRouterControllers); */
 
       return true;
    } catch (error) {

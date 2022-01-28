@@ -1,4 +1,3 @@
-import { MockApiSchema, MockApiServiceSchema, DefaultMockRequestConfig } from '../app/api-mock-schema.model';
 
 export const getMockPath = (projectName: string, feature: string, serviceId: string) => {
    if (feature) {

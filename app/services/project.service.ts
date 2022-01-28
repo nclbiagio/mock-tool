@@ -8,10 +8,8 @@ export const setProjectControllers = (router: Router, project: string): Promise<
 
 export const getProjectRouter = async (
    project: string,
-   main: string,
    path: string
 ): Promise<{
-   main: string;
    path: string;
    router: Router;
 }> => {
@@ -21,7 +19,6 @@ export const getProjectRouter = async (
    try {
       const router = await setProjectControllers(Router(), project);
       return {
-         main,
          path,
          router,
       };

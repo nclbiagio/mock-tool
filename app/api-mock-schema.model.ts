@@ -43,7 +43,7 @@ export interface ApiMockRespConfig {
    message?: string;
    delay?: number;
    cacheable?: boolean;
-   headers?: unknown;
+   headers?: KeyValuePairs<string>;
 }
 
 export type Verb = 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -70,6 +70,5 @@ export interface ProjectsList {
 
 export interface Project {
    id: string;
-   main: string;
    path: string;
 }
