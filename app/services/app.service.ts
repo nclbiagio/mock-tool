@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import fs from 'fs';
+import { getFile } from '../../utils/utils.service';
 import { MockApiSchema, MockApiServiceSchema, DefaultMockRequestConfig, KeyValueList, ProjectsList, Project } from '../api-mock-schema.model';
 import { NodeProcessException } from '../../exceptions/node-process-exception';
 import { getApiResponseData, getMockResponseData } from './api.service';
@@ -9,21 +9,7 @@ export const getApiSchemaPath = (projectName: string): string => {
    return `${process.cwd()}/projects/${projectName}/${projectName}-api.schema.json`;
 };
 
-export const getFile = (filename: string, encoding?: BufferEncoding): Promise<any> => {
-   const setEncoding = encoding ?? 'utf8';
-   return new Promise(function (resolve, reject) {
-      fs.readFile(filename, setEncoding, (err, data) => {
-         if (err) {
-            reject({ status: 404, err, message: `ERROR reading file ${filename}` });
-         } else {
-            const response = JSON.parse(data);
-            resolve(response);
-         }
-      });
-   });
-};
-
-export const getMockFile = async (filename: string, next: NextFunction) => {
+export const getMockFile = async (filename: string, next: NextFunction): Promise<any> => {
    try {
       const file = await getFile(filename);
       return file;
@@ -52,7 +38,7 @@ export const getProjectsSchema = async () => {
    return Promise.all(projectPromises);
 };
 
-export const getPath = (path: string) => {
+export const getPath = (path: string): string => {
    if (/{([^}]+)}/g.test(path)) {
       return path.replace(/{([^}]+)}/g, (_, elem) => {
          return `:${elem}`;
@@ -94,7 +80,13 @@ export const generateRouterControllersForProject = async (router: Router, projec
    }
 };
 
-export const setController = async (request: Request, response: Response, next: NextFunction, projectName: string, service: MockApiServiceSchema) => {
+export const setController = async (
+   request: Request,
+   response: Response,
+   next: NextFunction,
+   projectName: string,
+   service: MockApiServiceSchema
+): Promise<void> => {
    try {
       const mockData: unknown = await getMockResponseData(request, service.id, projectName, next);
       getApiResponseData<unknown>(request, response, next, mockData, service, projectName);

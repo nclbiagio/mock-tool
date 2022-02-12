@@ -125,7 +125,7 @@ Open ```http://localhost:7000``` in browser.
     * ```http://localhost:7000/example/1```
 * To get different Mock response enable the test suite tool adding ```devkitConfig.file``` into body request
     * ```{ devkitConfig: { file: 'getExampleListV2' } }```  
-* If you want to disable the mock response and proxy to another API add ```?mock=false``` as querystring. Proxy object inside schema configuration must configured. ( Look at API schema file configuration)
+* If you want to disable the mock response and proxy to another API
     * ```{ devkitConfig: { mock: false } }``` 
     * On Proxy mode everything is already configured to exclude devkitConfig from body request
 
@@ -134,3 +134,4 @@ Open ```http://localhost:7000``` in browser.
 * Move Querystring logic to body config object
 * Implement test suite tool
 * Implement Validators suite tool
+* Yml resources to json https://github.com/nodeca/js-yaml

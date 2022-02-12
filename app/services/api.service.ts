@@ -57,7 +57,7 @@ export const getApiResponseData = <T>(
    }
 };
 
-export const getMockResponseData = (request: Request, serviceId: string, projectName: string, next: NextFunction) => {
+export const getMockResponseData = (request: Request, serviceId: string, projectName: string, next: NextFunction): Promise<any> => {
    let mockPath = `${process.cwd()}/projects/${projectName}/mock/${serviceId}.mock.json`;
    const testName = customMockTest(request);
    if (testName && typeof testName === 'string') {
@@ -67,12 +67,19 @@ export const getMockResponseData = (request: Request, serviceId: string, project
    return getMockFile(mockPath, next);
 };
 
-export const consumeMockApi = <T>(request: Request, response: Response, next: NextFunction, data: T, config: MockApiServiceSchema, projectName: string) => {
+export const consumeMockApi = <T>(
+   request: Request,
+   response: Response,
+   next: NextFunction,
+   data: T,
+   config: MockApiServiceSchema,
+   projectName: string
+): void => {
    const responseConfig = getApiResponseConfig(config);
    if (!responseConfig) {
       next(new HttpException(500, 'ERROR Mock response Config not provided.'));
    } else {
-      const { status, delay, message } = responseConfig;
+      const { status, delay, message, headers } = responseConfig;
       const forceError = status > 400 && status <= 510;
       setTimeout(async () => {
          try {
@@ -80,6 +87,11 @@ export const consumeMockApi = <T>(request: Request, response: Response, next: Ne
                const errorMessage = message ?? `[${projectName}] ERROR forced by configuration with status ${status}`;
                next(new HttpException(status, errorMessage));
             } else {
+               if (headers && Object.keys(headers).length > 0) {
+                  Object.keys(headers).forEach((headerKey) => {
+                     response.set(headerKey, headers[headerKey]);
+                  });
+               }
                response.status(status).send(data);
             }
          } catch (err) {
