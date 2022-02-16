@@ -1,6 +1,6 @@
 import { NodeProcessException } from '../../exceptions/node-process-exception';
 import { MockApiSchema, MockApiServiceSchema, DefaultMockRequestConfig } from '../api-mock-schema.model';
-import { getFile } from './app.service';
+import { getFile } from '../../utils/utils.service';
 
 export const getRequestsFromFile = async (schema: MockApiSchema, projectName: string) => {
    const requestPromises = schema.services.reduce((accumulator: Promise<DefaultMockRequestConfig>[], service: MockApiServiceSchema) => {
@@ -60,7 +60,7 @@ export const getMappedSchemaService = (schemaServices: Partial<MockApiServiceSch
 };
 
 export const buildServicesSchema = async (schema: MockApiSchema, projectName: string): Promise<MockApiSchema> => {
-   let buildedSchema = {...schema};
+   let buildedSchema = { ...schema };
    let servicesListMapped = [...buildedSchema.services];
    const services = await getServicesFromFile(buildedSchema, projectName);
    if (services && services.length > 0) {
