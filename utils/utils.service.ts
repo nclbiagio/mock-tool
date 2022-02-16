@@ -14,7 +14,10 @@ export const getFile = (filename: string, encoding?: BufferEncoding): Promise<an
          if (err) {
             reject({ status: 404, err, message: `ERROR reading file ${filename}` });
          } else {
-            const response = JSON.parse(data);
+            let response = null;
+            if (data) {
+               response = JSON.parse(data);
+            }
             resolve(response);
          }
       });
