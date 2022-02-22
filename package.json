@@ -4,7 +4,7 @@
    "description": "development server app",
    "main": "dist/index.js",
    "scripts": {
-      "start": "ts-node-dev --respawn --pretty --transpile-only index.ts",
+      "start": "ts-node-dev --respawn --pretty --transpile-only --inspect -- index.ts",
       "build": "tsc --project ./",
       "prepare": "husky install"
    },

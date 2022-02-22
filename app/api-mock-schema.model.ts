@@ -15,7 +15,7 @@ export interface MockApiSchema extends ApiSchema {
 }
 
 export interface DefaultMockRequestConfig extends ApiRequestConfig<unknown> {
-   //used to retrieve request from files in schemas/[id]-request.schema.json  ex: common-request.schema.json
+   //used to retrieve request from files in [projectName]/requests/[id].request.json  ex: common.schema.json
    id?: string;
 }
 

@@ -4,7 +4,7 @@ import { MockApiSchema, MockApiServiceSchema } from './api-mock-schema.model';
 import { getProjectsSchema } from './services/app.service';
 import { getApiConfig } from './services/schema.service';
 import { buildServicesSchema } from './services/data-builder.service';
-import { getIdFromYmlPath, getJsonYmlFile } from './services/yaml.service';
+import { getIdFromYmlPath, getJsonYmlFile, getSchemaServices } from './services/yaml.service';
 
 export const setAppControllers = (router: Router, schema: MockApiSchema, project: string, basepath: string): Router => {
    const mockToolApi = '/mock-tool/api';
@@ -36,28 +36,10 @@ export const setAppControllers = (router: Router, schema: MockApiSchema, project
       }
    });
 
-   router.get(`${getSchemaYaml}`, async (request: Request, response: Response) => {
+   router.get(`${getSchemaYaml}`, async (request: Request, response: Response, next: NextFunction) => {
       try {
-         const ymlSchema = await getJsonYmlFile('openAPI', project);
-         const schema = { services: [] } as any;
-         if (ymlSchema) {
-            Object.keys(ymlSchema.paths).forEach((ymlPath) => {
-               const verb = Object.keys(ymlSchema.paths[ymlPath])[0];
-               const status = Object.keys(ymlSchema.paths[ymlPath][verb].responses)[0];
-               const id = getIdFromYmlPath(ymlPath, verb);
-               schema.services.push({
-                  id,
-                  path: ymlPath,
-                  verb: verb.toUpperCase(),
-                  response: {
-                     status: Number(status),
-                     delay: 500,
-                  },
-               });
-            });
-         }
-
-         response.status(200).send({ project, path: basepath, services: schema.services });
+         const schema = await getSchemaServices(project, basepath, next);
+         response.status(200).send(schema);
       } catch (e) {
          response.status(500).send({ code: 'ERR', message: e.message });
       }

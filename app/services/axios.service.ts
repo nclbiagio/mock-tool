@@ -46,7 +46,8 @@ export const getAxiosRequestOnTestFlow = (request: Request, config: MockApiServi
    // otherwise read file specified if present inside requests folder
    // if no requests is present throw an error
    if (request.body?.devkitConfig?.file) {
-      let folder = `${process.cwd()}/projects/${projectName}`;
+      const folder = `${process.cwd()}/projects/${projectName}`;
+      console.log(folder);
    }
 
    const { queryString, headers, body } = getApiRequestConfigFromSchema(config);
