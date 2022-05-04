@@ -16,7 +16,7 @@ import { appRouting } from './app/app.routing';
 dotenv.config();
 
 if (!process.env.PORT) {
-  process.exit(1);
+   process.exit(1);
 }
 /**
  * App Variables
@@ -31,19 +31,26 @@ app.use(cors());
 /**
  *  App Configuration
  */
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Logging
 app.use(morganMiddleware);
 
+app.use((req, res, next) => {
+   // List of headers that are to be exposed to the XHR front-end object
+   res.header('Access-Control-Expose-Headers', '*');
+   next();
+});
+
 /********************************
  * START ROUTING
  ********************************/
 appRouting(app, PROJECT).then((result: boolean) => {
-  console.log(`App routing Set: [${result}]`);
-  app.use(errorHandler);
-  app.use(notFoundHandler);
+   console.log(`App routing Set: [${result}]`);
+   app.use(errorHandler);
+   app.use(notFoundHandler);
 });
 /********************************
  * END ROUTING
@@ -51,5 +58,5 @@ appRouting(app, PROJECT).then((result: boolean) => {
 
 // Start the Proxy
 app.listen(PORT, HOST, () => {
-  console.log(`Starting Proxy at http://${HOST}:${PORT}`);
+   console.log(`Starting Proxy at http://${HOST}:${PORT}`);
 });
