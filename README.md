@@ -19,7 +19,7 @@ PROJECT=example
 ```
 
 In project root create folder **projects** and project file **projects.json** configured like:
-```{ "projects": [{"id": "PROJECT_NAME_OF_YOUR_CHOICE", "main": "/v1", "path": "/api"}, {...] } ```
+```{ "projects": [{"id": "PROJECT_NAME_OF_YOUR_CHOICE", "path": "/api"}, {...] } ```
 Then use the following structure below for each new **project** like **"example"**:
 ```
 .
@@ -44,7 +44,7 @@ yarn generate [PUT_YOUR_PROJECT_NAME]
 ```*-api.schema.json``` it must follow a well-defined structure:
 ```ts
 project: 'example'                      // Project name
-path: '/api/example'                    // Base project path, used only for info
+path: '/api/example'                    // Base project path, used only for info and display
 services: [{                            // List of all API related to project
     id: string                          // Semantic string id [verb][service method]: getExampleList
     feature: string                     // Optional for a better mock file splitting

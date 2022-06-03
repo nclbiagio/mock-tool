@@ -73,6 +73,16 @@ export const generateRouterControllersForProject = async (router: Router, projec
                await setController(request, response, next, projectName, service);
             });
          }
+         if (service.verb === 'PUT') {
+            router.put(`${path}`, async (request: Request, response: Response, next: NextFunction) => {
+               await setController(request, response, next, projectName, service);
+            });
+         }
+         if (service.verb === 'DELETE') {
+            router.delete(`${path}`, async (request: Request, response: Response, next: NextFunction) => {
+               await setController(request, response, next, projectName, service);
+            });
+         }
       });
       return router;
    } catch (error) {
