@@ -4,3 +4,5 @@ logs/*
 .env
 projects/*
 .eslintcache
+logs
+assets/mages/*

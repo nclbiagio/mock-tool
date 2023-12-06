@@ -5,17 +5,20 @@ import * as dotenv from 'dotenv';
 /**
  * Middlewares
  */
-import { morganMiddleware } from './middlewares/morgan.middleware';
-import { errorHandler } from './middlewares/error.middleware';
-import { notFoundHandler } from './middlewares/not-found.middleware';
+import { morganMiddleware } from './app/middlewares/morgan.middleware';
+import { errorHandler } from './app/middlewares/error.middleware';
+import { notFoundHandler } from './app/middlewares/not-found.middleware';
 /**
  * App routing
  */
 import { appRouting } from './app/app.routing';
+import { AppStoreService } from './app/services/app-store.service';
+import { getRoutesConfig } from './app/utils/utils.service';
 
 dotenv.config();
 
 if (!process.env.PORT) {
+   console.log('Env file not set! App Exit!');
    process.exit(1);
 }
 /**
@@ -24,6 +27,9 @@ if (!process.env.PORT) {
 const PORT: number = parseInt(process.env.PORT as string, 10) || 7000;
 const HOST = process.env.HOST || 'localhost';
 const PROJECT = process.env.PROJECT || null;
+
+const appService = AppStoreService.getInstance();
+appService.appConfig = { host: HOST, port: PORT };
 
 const app: Application = express();
 app.use(helmet());
@@ -51,6 +57,10 @@ appRouting(app, PROJECT).then((result: boolean) => {
    console.log(`App routing Set: [${result}]`);
    app.use(errorHandler);
    app.use(notFoundHandler);
+   if (result) {
+      console.log('stack is set');
+      appService.appRouterStack = getRoutesConfig(app._router.stack);
+   }
 });
 /********************************
  * END ROUTING

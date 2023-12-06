@@ -30,6 +30,7 @@ export interface ApiMockConfig {
    proxy?: ApiProxyRequestConfig;
    dependencies?: { serviceId: string }[];
    validators?: { [field: string]: Rule[] };
+   test?: string[]; //serviceId to override response mock with another file inside mock/test/[serviceId].mock.json
    description?: string;
 }
 
@@ -44,6 +45,7 @@ export interface ApiMockRespConfig {
    delay?: number;
    cacheable?: boolean;
    headers?: KeyValuePairs<string>;
+   file?: boolean; //path to image
 }
 
 export type Verb = 'GET' | 'POST' | 'PUT' | 'DELETE';

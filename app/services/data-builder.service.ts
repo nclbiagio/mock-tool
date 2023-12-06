@@ -1,10 +1,11 @@
-import { NodeProcessException } from '../../exceptions/node-process-exception';
+import { NodeProcessException } from '../exceptions/node-process-exception';
 import { MockApiSchema, MockApiServiceSchema, DefaultMockRequestConfig } from '../api-mock-schema.model';
-import { getFile } from '../../utils/utils.service';
+import { getFile } from '../utils/utils.service';
+import { environment } from '../../environments/environment';
 
 export const getRequestsFromFile = async (schema: MockApiSchema, projectName: string) => {
    const requestPromises = schema.services.reduce((accumulator: Promise<DefaultMockRequestConfig>[], service: MockApiServiceSchema) => {
-      let folder = `${process.cwd()}/projects/${projectName}`;
+      let folder = `${process.cwd()}${environment.baseFilePath}projects/${projectName}`;
       if (service.request && service.request.id) {
          folder = `${folder}/requests/${service.request.id}.request.json`;
          accumulator.push(getFile(folder));
@@ -16,7 +17,7 @@ export const getRequestsFromFile = async (schema: MockApiSchema, projectName: st
 
 export const getServicesFromFile = (schema: MockApiSchema, projectName: string) => {
    const servicePromises = schema.services.reduce((accumulator: Promise<MockApiServiceSchema>[], service: MockApiServiceSchema) => {
-      let folder = `${process.cwd()}/projects/${projectName}`;
+      let folder = `${process.cwd()}${environment.baseFilePath}projects/${projectName}`;
       if (service.id && (!service.path || !service.verb)) {
          folder = `${folder}/services/${service.id}.service.json`;
          accumulator.push(getFile(folder));

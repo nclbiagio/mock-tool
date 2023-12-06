@@ -1,12 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Router, Request, Response, NextFunction } from 'express';
-import { getFile } from '../../utils/utils.service';
-import { MockApiSchema, MockApiServiceSchema, DefaultMockRequestConfig, KeyValueList, ProjectsList, Project } from '../api-mock-schema.model';
-import { NodeProcessException } from '../../exceptions/node-process-exception';
+import { getFile } from '../utils/utils.service';
+import { MockApiSchema, MockApiServiceSchema, ProjectsList, Project } from '../api-mock-schema.model';
+import { NodeProcessException } from '../exceptions/node-process-exception';
 import { getApiResponseData, getMockResponseData } from './api.service';
 import { buildServicesSchema } from './data-builder.service';
+import { environment } from '../../environments/environment';
 
 export const getApiSchemaPath = (projectName: string): string => {
-   return `${process.cwd()}/projects/${projectName}/${projectName}-api.schema.json`;
+   return `${process.cwd()}${environment.baseFilePath}projects/${projectName}/${projectName}-api.schema.json`;
 };
 
 export const getMockFile = async (filename: string, next: NextFunction): Promise<any> => {
@@ -24,12 +26,12 @@ export const getProjectApiSchema = (projectName: string): Promise<MockApiSchema>
 };
 
 export const getProjectsFile = async (): Promise<Project[]> => {
-   const appProjects = await getFile(`${process.cwd()}/projects/projects.json`);
+   const appProjects = await getFile(`${process.cwd()}${environment.baseFilePath}projects/projects.json`);
    const { projects } = appProjects as ProjectsList;
    return projects;
 };
 
-export const getProjectsSchema = async () => {
+export const getProjectsSchema = async (): Promise<MockApiSchema[]> => {
    const appProjects = await getProjectsFile();
    const projectPromises = appProjects.reduce((accumulator: Promise<MockApiSchema>[], currentProject: Project) => {
       accumulator.push(getProjectApiSchema(currentProject.id));
@@ -83,6 +85,11 @@ export const generateRouterControllersForProject = async (router: Router, projec
                await setController(request, response, next, projectName, service);
             });
          }
+         if (service.verb === 'PATCH') {
+            router.patch(`${path}`, async (request: Request, response: Response, next: NextFunction) => {
+               await setController(request, response, next, projectName, service);
+            });
+         }
       });
       return router;
    } catch (error) {
@@ -98,8 +105,9 @@ export const setController = async (
    service: MockApiServiceSchema
 ): Promise<void> => {
    try {
-      const mockData: unknown = await getMockResponseData(request, service.id, projectName, next);
-      getApiResponseData<unknown>(request, response, next, mockData, service, projectName);
+      const serviceIdTestOveride = service.test ?? null;
+      const mockData: any = await getMockResponseData(request, service.id, serviceIdTestOveride, projectName, next);
+      getApiResponseData<any>(request, response, next, mockData, service, projectName);
    } catch (error) {
       next(error);
    }

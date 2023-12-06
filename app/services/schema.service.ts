@@ -1,5 +1,5 @@
 import { NextFunction, Request } from 'express';
-import { HttpException } from '../../exceptions/http-exception';
+import { HttpException } from '../exceptions/http-exception';
 import {
    MockApiSchema,
    MockApiServiceSchema,
@@ -57,9 +57,9 @@ export const isMockFlow = (request: Request<Partial<MockApiDevKit>>): boolean =>
    request.body.devkitConfig === undefined || request.body?.devkitConfig?.mock === undefined || request.body?.devkitConfig?.mock !== false;
 
 /**
- * 
- * @param request 
- * @returns 
+ *
+ * @param request
+ * @returns
  * If you want to try different mock response based on use cases add "file" property to devkitConfig body request
  * es: devkitConfig.file:mock1
  * If isMockFlow and customMockTest valued then RESPONSE will change based on which test you want to perform

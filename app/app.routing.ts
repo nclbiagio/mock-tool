@@ -2,11 +2,10 @@ import { Application, Router } from 'express';
 // import { createProxyMiddleware, Filter, Options, RequestHandler } from 'http-proxy-middleware';
 import * as apiAppSchema from './app-api.schema.json';
 import { setAppControllers } from './app.controllers';
-import { NodeProcessException } from '../exceptions/node-process-exception';
+import { NodeProcessException } from './exceptions/node-process-exception';
 import { getProjectRouter } from './services/project.service';
 import { getProjectsFile } from './services/app.service';
 import { Project } from './api-mock-schema.model';
-import { setTestSuiteControllers } from './test-suite/test-suite.controllers';
 
 /**
  * Projects routing
@@ -29,6 +28,11 @@ export const appRouting = async (app: Application, project: string | null): Prom
             pojectConfig = { ...projectConf };
          }
       });
+
+      if (!pojectConfig) {
+         const error = 'PROJECT config not finded';
+         throw new NodeProcessException(500, error, `ERROR: ${error}`, error);
+      }
 
       const getActiveRouterConf = await getProjectRouter(pojectConfig.id, pojectConfig.path);
 
@@ -60,13 +64,6 @@ export const appRouting = async (app: Application, project: string | null): Prom
       if (getActiveRouterConf) {
          app.use(getActiveRouterConf.path, getActiveRouterConf.router);
       }
-
-      /**
-       * TEST SUITE API Routers Definition
-       */
-      /* const testSuiteRouter = Router();
-      const testSuiteRouterControllers = setTestSuiteControllers(testSuiteRouter);
-      app.use('/test-suite/v1/', testSuiteRouterControllers); */
 
       return true;
    } catch (error) {

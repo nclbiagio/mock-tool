@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { NodeProcessException } from '../../exceptions/node-process-exception';
+import { NodeProcessException } from '../exceptions/node-process-exception';
 import { generateRouterControllersForProject } from '../../app/services/app.service';
 
 export const setProjectControllers = (router: Router, project: string): Promise<Router> => {

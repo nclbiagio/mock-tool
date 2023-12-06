@@ -2,9 +2,9 @@
 Built on top of Express library, this project is meant primarily has a dev tool to develop client application using custom mock responses.
 ## Use case
 * As a Default API Mock service, returns always the same mock response. (**Recommended**) 
-* As an API Mock service configurable for dynamic mock response. (**TO DO**)
 * As a proxy server.
-* As PROJECT FLOW TEST TOOL => test, consume and generate mocks from project API. Es: (**TO DO**)
+* (**TO DO, WIP**)As an API Mock service configurable for dynamic mock response.
+* (**TO DO, WIP**) As PROJECT FLOW TEST TOOL => test, consume and generate mocks from project API. Es:
     1) Define Config Example Flow 
     2) Extablish API dependencies 
     3) Orchestrate API and check errors
@@ -34,7 +34,8 @@ Then use the following structure below for each new **project** like **"example"
 │   ├── projects.json 
 └── ...
 ```
-**Request** and **Services** folders are optionals, and can be used only in case it's necessary split ```*-api.schema.json``` in multiple files. All mocks file name must match with service id added in example-api.schema.json and must have the ".mock.json" extension.
+**Request** and **Services** folders are optionals, and can be used only in case it's necessary split ```*-api.schema.json``` in multiple files. 
+All mocks file name must match with service id added in example-api.schema.json and must have the ".mock.json" extension.
 
 If you want to avoid the manual process you can generate this structure running this command: (**TO DO**)
 ```sh
@@ -44,7 +45,7 @@ yarn generate [PUT_YOUR_PROJECT_NAME]
 ```*-api.schema.json``` it must follow a well-defined structure:
 ```ts
 project: 'example'                      // Project name
-path: '/api/example'                    // Base project path, used only for info and display
+path: '/example'                        // Base project path, used only for info and display
 services: [{                            // List of all API related to project
     id: string                          // Semantic string id [verb][service method]: getExampleList
     feature: string                     // Optional for a better mock file splitting
@@ -78,15 +79,16 @@ services: [{                            // List of all API related to project
 ```
 
 ## API schema splitted file configuration
-It's possibile to split ```*-api.schema.json``` in multiple files to avoid to many services.
+It's possibile to split ```*-api.schema.json``` in multiple files to avoid too many services.
 For example a developer can declare only the ```id``` property, if this happens the ```data-builder.service.ts``` will goes throught the ```services``` folder to get and read the ```getExampleList.service.json```. The content will be appended to the relative array element of services.
 ```ts
 project: 'example'                      // Project name
-path: '/api/example'                    // Base project path, used only for info
+path: '/example'                    // Base project path, used only for info
 services: [{                            // List of all API related to project
     id: string                          // Semantic string id [verb][service method]: getExampleList
 }];
 ```
+
 ```getExampleList.service.json``` example schema:
 ```ts
 id: string                          // Semantic string id [verb][service method]: getExampleList

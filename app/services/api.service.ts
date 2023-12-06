@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { MockApiServiceSchema, KeyValuePairs, DevKitConfig, MockApiDevKit } from '../api-mock-schema.model';
 import { axiosApiCall } from './axios.service';
-import { HttpException } from '../../exceptions/http-exception';
+import { HttpException } from '../exceptions/http-exception';
 import { customMockTest, getApiProxyRequestConfigFromSchema, getApiResponseConfig, isMockFlow } from './schema.service';
 import { getMockFile } from './app.service';
+import { environment } from '../../environments/environment';
 
 /**
  *
@@ -57,11 +58,18 @@ export const getApiResponseData = <T>(
    }
 };
 
-export const getMockResponseData = (request: Request, serviceId: string, projectName: string, next: NextFunction): Promise<any> => {
-   let mockPath = `${process.cwd()}/projects/${projectName}/mock/${serviceId}.mock.json`;
+export const getMockResponseData = (
+   request: Request,
+   serviceId: string,
+   serviceIdTest: string[] | null,
+   projectName: string,
+   next: NextFunction
+): Promise<any> => {
+   let mockPath = `${process.cwd()}${environment.baseFilePath}projects/${projectName}/mock/${serviceId}.mock.json`;
    const testName = customMockTest(request);
-   if (testName && typeof testName === 'string') {
-      mockPath = `${process.cwd()}/projects/${projectName}/mock/test/${testName}.mock.json`;
+   if ((testName && typeof testName === 'string') || (serviceIdTest && serviceIdTest.length > 0)) {
+      const testNameFile = testName || serviceIdTest[0];
+      mockPath = `${process.cwd()}${environment.baseFilePath}projects/${projectName}/mock/test/${testNameFile}.mock.json`;
       return getMockFile(mockPath, next);
    }
    return getMockFile(mockPath, next);
@@ -79,7 +87,7 @@ export const consumeMockApi = <T>(
    if (!responseConfig) {
       next(new HttpException(500, 'ERROR Mock response Config not provided.'));
    } else {
-      const { status, delay, message, headers } = responseConfig;
+      const { status, delay, message, headers, file } = responseConfig;
       const forceError = status > 400 && status <= 510;
       setTimeout(async () => {
          try {
@@ -92,7 +100,12 @@ export const consumeMockApi = <T>(
                      response.set(headerKey, headers[headerKey]);
                   });
                }
-               response.status(status).send(data);
+               const pathToTestFile = `${process.cwd()}${environment.baseAssetsPath}assets/images/test.png`;
+               if (file) {
+                  response.sendFile(pathToTestFile);
+               } else {
+                  response.status(status).send(data);
+               }
             }
          } catch (err) {
             next(err);
