@@ -9,7 +9,6 @@ import { getJsonYmlFile, getSchemaServices } from './services/yaml.service';
 import { AppStoreService } from './services/app-store.service';
 import { getFile, getMockPath } from './utils/utils.service';
 import { environment } from '../environments/environment';
-import { generateCustomToken } from './services/jwt.service';
 
 export const setAppControllers = (router: Router, schema: MockApiSchema, project: string, basepath: string): Router => {
    /**
@@ -102,19 +101,6 @@ export const setAppControllers = (router: Router, schema: MockApiSchema, project
          const mockPath = getMockPath(request.params.id);
          const file = await getFile(mockPath);
          response.status(200).send(file);
-      } catch (e) {
-         response.status(500).send({ code: 'ERR', message: e.message });
-      }
-   });
-
-   router.get(`/mock/jwt/generate/:secret?`, async (request: Request, response: Response) => {
-      try {
-         if (request.params.secret) {
-            const token = generateCustomToken(request.params.secret as string);
-            response.status(200).send({ token });
-         } else {
-            response.status(500).send({ code: 'ERR', message: 'secret key param missing' });
-         }
       } catch (e) {
          response.status(500).send({ code: 'ERR', message: e.message });
       }
