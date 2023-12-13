@@ -1,4 +1,5 @@
-import * as child from 'child_process';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { spawn, exec } from 'child_process';
 import { Request, Response, NextFunction, Router } from 'express';
 import { getApiResponseData } from './services/api.service';
 import { MockApiSchema, MockApiServiceSchema } from './api-mock-schema.model';
@@ -7,7 +8,7 @@ import { getApiConfig } from './services/schema.service';
 import { buildServicesSchema } from './services/data-builder.service';
 import { getJsonYmlFile, getSchemaServices } from './services/yaml.service';
 import { AppStoreService } from './services/app-store.service';
-import { getFile, getMockPath } from './utils/utils.service';
+import { getFile, getMockPath, getTypesPath } from './utils/utils.service';
 import { environment } from '../environments/environment';
 
 export const setAppControllers = (router: Router, schema: MockApiSchema, project: string, basepath: string): Router => {
@@ -33,7 +34,7 @@ export const setAppControllers = (router: Router, schema: MockApiSchema, project
             stack: appService.appRouterStack,
          };
          response.status(200).send(appService.appConfig);
-      } catch (e) {
+      } catch (e: any) {
          response.status(500).send({ code: 'ERR', message: e.message });
       }
    });
@@ -49,7 +50,7 @@ export const setAppControllers = (router: Router, schema: MockApiSchema, project
          const mockResponse = [activeProjectSchema];
 
          response.status(200).send(mockResponse);
-      } catch (e) {
+      } catch (e: any) {
          response.status(500).send({ code: 'ERR02', message: e.message });
       }
    });
@@ -58,7 +59,7 @@ export const setAppControllers = (router: Router, schema: MockApiSchema, project
       try {
          const ymlSchema = await getJsonYmlFile('openAPI', project);
          response.status(200).send({ ymlSchema });
-      } catch (e) {
+      } catch (e: any) {
          response.status(500).send({ code: 'ERR', message: e.message });
       }
    });
@@ -67,7 +68,7 @@ export const setAppControllers = (router: Router, schema: MockApiSchema, project
       try {
          const schema = await getSchemaServices(project, basepath, next);
          response.status(200).send(schema);
-      } catch (e) {
+      } catch (e: any) {
          response.status(500).send({ code: 'ERR', message: e.message });
       }
    });
@@ -82,26 +83,54 @@ export const setAppControllers = (router: Router, schema: MockApiSchema, project
                //  a new process.
                //  The `child_process` module lets us
                //  access OS functionalities by running any bash command.`.
-               child.spawn(process.argv.shift(), process.argv, {
+               /* child.spawn(process.argv.shift(), process.argv, {
                   cwd: process.cwd(),
                   detached: true,
                   stdio: 'inherit',
-               });
+               }); */
             });
             response.status(202);
             process.exit();
          }, 1000);
-      } catch (e) {
+      } catch (e: any) {
          response.status(500).send({ code: 'ERR', message: e.message });
       }
    });
 
    router.get(`/mock/api/:id`, async (request: Request, response: Response) => {
       try {
-         const mockPath = getMockPath(request.params.id);
-         const file = await getFile(mockPath);
+         const mockPath = getMockPath();
+         const fullPath = `${mockPath}${request.params.id}.mock.json`;
+         const file = await getFile(fullPath);
          response.status(200).send(file);
-      } catch (e) {
+      } catch (e: any) {
+         response.status(500).send({ code: 'ERR', message: e.message });
+      }
+   });
+
+   router.get(`/mock/api/maketype/:id`, async (request: Request, response: Response) => {
+      try {
+         const mockPath = getMockPath();
+         const typesPath = getTypesPath();
+         const fullPath = `${mockPath}${request.params.id}.mock.json`;
+         if (mockPath) {
+            exec(`make_types -i ${typesPath}${request.params.id}.interface.ts ${fullPath} RootName`, (error, stdout, stderr) => {
+               if (error) {
+                  response.status(500).send({ code: 'ERR', message: error.message });
+                  return;
+               }
+               if (stderr) {
+                  response.status(500).send({ code: 'ERR', message: stderr });
+                  return;
+               }
+               response.status(200).send({ msg: 'Interface generated' });
+            });
+         }
+         /* const jsonFileObject = await getFile(mockPath);
+         const stringyfiedObject = JSON.stringify(jsonFileObject);
+         const type = await buildTypesFromJson(stringyfiedObject);
+         response.status(200).send({ file: type }); */
+      } catch (e: any) {
          response.status(500).send({ code: 'ERR', message: e.message });
       }
    });

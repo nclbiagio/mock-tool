@@ -26,10 +26,10 @@ if (!process.env.PORT) {
  */
 const PORT: number = parseInt(process.env.PORT as string, 10) || 7000;
 const HOST = process.env.HOST || 'localhost';
-const PROJECT = process.env.PROJECT || null;
+const PROJECT = process.env.PROJECT || 'example';
 
 const appService = AppStoreService.getInstance();
-appService.appConfig = { host: HOST, port: PORT };
+appService.appConfig = { host: HOST, port: PORT, project: PROJECT };
 
 const app: Application = express();
 app.use(helmet());
@@ -58,6 +58,7 @@ appRouting(app, PROJECT).then((result: boolean) => {
    app.use(errorHandler);
    app.use(notFoundHandler);
    if (result) {
+      console.log('Project', appService.appConfig.project);
       console.log('stack is set');
       appService.appRouterStack = getRoutesConfig(app._router.stack);
    }

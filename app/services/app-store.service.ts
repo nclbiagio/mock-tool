@@ -1,9 +1,9 @@
 export interface AppConfig {
    host: string;
    port: number;
+   project: string;
    status?: string;
    warnings?: string[];
-   project?: string;
    basepath?: string;
    environment?: 'dev' | 'prod';
    stack?: any;
@@ -11,12 +11,12 @@ export interface AppConfig {
 
 export class AppStoreService {
    private static _instance: AppStoreService;
-   private _config: AppConfig;
+   private _config!: AppConfig;
 
    // eslint-disable-next-line @typescript-eslint/no-empty-function
    private constructor() {}
 
-   static getInstance() {
+   static getInstance(): AppStoreService {
       if (this._instance) {
          return this._instance;
       }
@@ -29,7 +29,7 @@ export class AppStoreService {
       this._config = data;
    }
 
-   public get appConfig() {
+   public get appConfig(): AppConfig {
       return this._config;
    }
 

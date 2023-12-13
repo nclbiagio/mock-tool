@@ -30,7 +30,7 @@ export const getIdFromYmlPath = (ymlPath: string, verb: string): string => {
    return `${verb}${id}`;
 };
 
-export const getSchemaServices = async (project: string, path: string, next: NextFunction): Promise<MockApiSchema> => {
+export const getSchemaServices = async (project: string, path: string, next: NextFunction): Promise<MockApiSchema | undefined> => {
    try {
       const ymlSchema = await getJsonYmlFile('openAPI', project);
       const schema: MockApiSchema = { project, path, services: [] };

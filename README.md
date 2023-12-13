@@ -3,12 +3,11 @@ Built on top of Express library, this project is meant primarily has a dev tool 
 ## Use case
 * As a Default API Mock service, returns always the same mock response. (**Recommended**) 
 * As a proxy server.
-* (**TO DO, WIP**)As an API Mock service configurable for dynamic mock response.
-* (**TO DO, WIP**) As PROJECT FLOW TEST TOOL => test, consume and generate mocks from project API. Es:
-    1) Define Config Example Flow 
-    2) Extablish API dependencies 
-    3) Orchestrate API and check errors
-    4) Generate mocks to reuse during the flow
+* To generate interfaces from mock response
+
+## Required libraries
+https://github.com/nclbiagio/mock-tool
+https://github.com/jvilk/MakeTypes -> npm i maketypes
 
 ## Folders/files Configuration
 In project root create file **.env** like this:
@@ -30,17 +29,15 @@ Then use the following structure below for each new **project** like **"example"
 │   │   │   ├──  getExampleList.mock.json
 │   │   ├──  requests
 │   │   ├──  services
+│   │   ├──  types
 │   │   ├──  example-api.schema.json
 │   ├── projects.json 
 └── ...
 ```
-**Request** and **Services** folders are optionals, and can be used only in case it's necessary split ```*-api.schema.json``` in multiple files. 
+**Request** and **Services** folders are optionals, and can be used only in case it's necessary split ```*-api.schema.json``` in multiple files.
+**Types** folder must be created before the command to generate the interface otherwise an error will occur.
 All mocks file name must match with service id added in example-api.schema.json and must have the ".mock.json" extension.
 
-If you want to avoid the manual process you can generate this structure running this command: (**TO DO**)
-```sh
-yarn generate [PUT_YOUR_PROJECT_NAME]
-```
 ## API schema basic file configuration
 ```*-api.schema.json``` it must follow a well-defined structure:
 ```ts
@@ -48,7 +45,7 @@ project: 'example'                      // Project name
 path: '/example'                        // Base project path, used only for info and display
 services: [{                            // List of all API related to project
     id: string                          // Semantic string id [verb][service method]: getExampleList
-    feature: string                     // Optional for a better mock file splitting
+    feature?: string                     // Optional for a better mock file splitting
     path: '/'                           
     verb: 'GET'                         // GET POST PUT DELETE
     request?: {

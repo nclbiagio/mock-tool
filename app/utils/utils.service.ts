@@ -1,15 +1,26 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from 'fs';
 import { AppConfig, AppStoreService } from '../services/app-store.service';
 import { environment } from '../../environments/environment';
 
-export const getMockPath = (id: string, feature?: string) => {
+export const getMockPath = (feature?: string): string => {
    const appService = AppStoreService.getInstance();
    const projectName = appService.appConfig.project;
-   `${process.cwd()}${environment.baseFilePath}projects/${projectName}/mock/${id}.mock.json`;
+   `${process.cwd()}${environment.baseFilePath}projects/${projectName}/mock/`;
    if (feature) {
-      return `${process.cwd()}${environment.baseFilePath}projects/${projectName}/mock/${feature}/${id}.mock.json`;
+      return `${process.cwd()}${environment.baseFilePath}projects/${projectName}/mock/${feature}/`;
    }
-   return `${process.cwd()}${environment.baseFilePath}projects/${projectName}/mock/${id}.mock.json`;
+   return `${process.cwd()}${environment.baseFilePath}projects/${projectName}/mock/`;
+};
+
+export const getTypesPath = (feature?: string): string => {
+   const appService = AppStoreService.getInstance();
+   const projectName = appService.appConfig.project;
+   `${process.cwd()}${environment.baseFilePath}projects/${projectName}/types/`;
+   if (feature) {
+      return `${process.cwd()}${environment.baseFilePath}projects/${projectName}/types/${feature}/`;
+   }
+   return `${process.cwd()}${environment.baseFilePath}projects/${projectName}/types/`;
 };
 
 export const getFile = (filename: string, encoding?: BufferEncoding): Promise<any> => {
@@ -29,7 +40,7 @@ export const getFile = (filename: string, encoding?: BufferEncoding): Promise<an
    });
 };
 
-export const getRoutesConfig = (routerStack: any) => {
+export const getRoutesConfig = (routerStack: any[]): any[] => {
    let routesAcl: any[] = [];
    if (routerStack) {
       let routes: string[] = [];
@@ -102,7 +113,13 @@ export const getPathFromRoute = (path: string): string => {
    return finalPath;
 };
 
-export const getRouteForClient = (routes: string[]) => {
+export const getRouteForClient = (
+   routes: string[]
+): {
+   id: string;
+   path: string;
+   verb: string;
+}[] => {
    const routesForClient = routes.map((route) => {
       const verb = route.split('@')[0];
       const id = getIdFromRoute(route.split('@')[1], verb);

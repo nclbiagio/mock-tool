@@ -1,9 +1,9 @@
 import { NodeProcessException } from '../exceptions/node-process-exception';
-import { MockApiSchema, MockApiServiceSchema, DefaultMockRequestConfig } from '../api-mock-schema.model';
+import { MockApiSchema, MockApiServiceSchema, DefaultMockRequestConfig, DefaultMockApiServiceSchema, ApiMockConfig } from '../api-mock-schema.model';
 import { getFile } from '../utils/utils.service';
 import { environment } from '../../environments/environment';
 
-export const getRequestsFromFile = async (schema: MockApiSchema, projectName: string) => {
+export const getRequestsFromFile = async (schema: MockApiSchema, projectName: string): Promise<DefaultMockRequestConfig[]> => {
    const requestPromises = schema.services.reduce((accumulator: Promise<DefaultMockRequestConfig>[], service: MockApiServiceSchema) => {
       let folder = `${process.cwd()}${environment.baseFilePath}projects/${projectName}`;
       if (service.request && service.request.id) {
@@ -15,7 +15,7 @@ export const getRequestsFromFile = async (schema: MockApiSchema, projectName: st
    return Promise.all(requestPromises);
 };
 
-export const getServicesFromFile = (schema: MockApiSchema, projectName: string) => {
+export const getServicesFromFile = (schema: MockApiSchema, projectName: string): Promise<(DefaultMockApiServiceSchema & ApiMockConfig)[]> => {
    const servicePromises = schema.services.reduce((accumulator: Promise<MockApiServiceSchema>[], service: MockApiServiceSchema) => {
       let folder = `${process.cwd()}${environment.baseFilePath}projects/${projectName}`;
       if (service.id && (!service.path || !service.verb)) {
@@ -27,7 +27,7 @@ export const getServicesFromFile = (schema: MockApiSchema, projectName: string) 
    return Promise.all(servicePromises);
 };
 
-export const getMappedRequestSchemaService = (schemaServices: MockApiServiceSchema[], requests: DefaultMockRequestConfig[]) => {
+export const getMappedRequestSchemaService = (schemaServices: MockApiServiceSchema[], requests: DefaultMockRequestConfig[]): MockApiServiceSchema[] => {
    return schemaServices.map((service) => {
       if (service.request && service.request.id) {
          const getRequest = requests.find((request) => request.id === service.request.id);
@@ -46,7 +46,7 @@ export const getMappedRequestSchemaService = (schemaServices: MockApiServiceSche
    });
 };
 
-export const getMappedSchemaService = (schemaServices: Partial<MockApiServiceSchema[]>, servicesFromFile: MockApiServiceSchema[]) => {
+export const getMappedSchemaService = (schemaServices: MockApiServiceSchema[], servicesFromFile: MockApiServiceSchema[]): MockApiServiceSchema[] => {
    return schemaServices.map((service) => {
       if (service.id && (!service.path || !service.verb)) {
          const getService = servicesFromFile.find((serviceFromFile) => serviceFromFile.id === service.id);
